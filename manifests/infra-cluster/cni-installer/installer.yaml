@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cni-plugins-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: cni-plugins-installer
+  template:
+    metadata:
+      labels:
+        app: cni-plugins-installer
+    spec:
+      containers:
+      - name: installer
+        image: node:18-slim
+        command:
+        - bash
+        - -c
+        - npx zx /scripts/install.mjs && sleep infinity
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+        - name: cni-bin
+          mountPath: /opt/cni/bin/
+      volumes:
+      - name: script
+        configMap:
+          name: script-configmap
+      - name: cni-bin
+        hostPath:
+          path: /opt/cni/bin/

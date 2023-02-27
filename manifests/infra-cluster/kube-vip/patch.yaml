@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-vip
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      hostAliases:
+      - hostnames:
+        - kubernetes
+        ip: 127.0.0.1
+      containers:
+      - name: kube-vip
+        volumeMounts:
+        - mountPath: /etc/kubernetes/admin.conf
+          name: kubeconfig
+      volumes:
+      - hostPath:
+          path: /etc/rancher/k3s/k3s.yaml
+        name: kubeconfig

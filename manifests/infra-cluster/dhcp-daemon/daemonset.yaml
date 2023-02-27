@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dhcp-daemon
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: dhcp-daemon
+  template:
+    metadata:
+      labels:
+        app: dhcp-daemon
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: dhcp-daemon
+        image: node:18-slim
+        command:
+        - sh
+        - -c
+        - rm -f /host/run/cni/dhcp.sock && /opt/cni/bin/dhcp daemon -hostprefix /host
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: cni-bin
+          mountPath: /opt/cni/bin/
+        - name: dhcp-sock
+          mountPath: /host/run/cni/
+        - name: netns
+          mountPath: /host/var/run/
+          mountPropagation: HostToContainer
+      volumes:
+      - name: cni-bin
+        hostPath:
+          path: /opt/cni/bin/
+      - name: dhcp-sock
+        hostPath:
+          path: /run/cni/
+      - name: netns
+        hostPath:
+          path: /var/run/

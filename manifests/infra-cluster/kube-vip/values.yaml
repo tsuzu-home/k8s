@@ -1,0 +1,24 @@
+env:
+  vip_interface: br0
+  vip_leaderelection: "true"
+  cp_enable: "true"
+  vip_cidr: "24"
+  lb_enable: "false"
+
+config:
+  address: 192.168.1.222
+
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_TIME

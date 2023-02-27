@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: kube-vip
+    version: 0.4.2
+    repo: https://kube-vip.github.io/helm-charts/
+    namespace: kube-system
+    releaseName: kube-vip
+    valuesFile: values.yaml
+    valuesMerge: override
+
+patches:
+- path: patch.yaml
+  target:
+    kind: DaemonSet

@@ -1,0 +1,9 @@
+tunnel: "vxlan"
+
+ipv4NativeRoutingCIDR: 10.42.0.0/16
+
+ipam:
+  mode: kubernetes
+
+cni:
+  exclusive: false
