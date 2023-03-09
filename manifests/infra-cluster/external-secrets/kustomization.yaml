@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: external-secrets
+    version: 0.7.2
+    repo: https://charts.external-secrets.io
+    namespace: kube-system
+    releaseName: "external-secrets"
+    valuesFile: values.yaml
+    valuesMerge: override
