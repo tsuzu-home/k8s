@@ -13,6 +13,9 @@ env:
 config:
   address: 10.23.0.1
 
+nodeSelector:
+  node-role.kubernetes.io/control-plane: "true"
+
 tolerations:
   - effect: NoExecute
     operator: Exists
