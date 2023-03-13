@@ -1,0 +1,25 @@
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRBlock
+metadata:
+  labels:
+    controlplane.miscord.win/usage: extra
+    controlplane.miscord.win/version: v4
+  name: extra
+  namespace: default
+spec:
+  cidr: 10.234.0.0/16
+---
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRClaimTemplate
+metadata:
+  labels:
+    controlplane.miscord.win/usage: extra
+    controlplane.miscord.win/version: v4
+  name: extra
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      controlplane.miscord.win/usage: extra
+      controlplane.miscord.win/version: v4
+  sizeBit: 8

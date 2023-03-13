@@ -1,0 +1,51 @@
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRBlock
+metadata:
+  labels:
+    controlplane.miscord.win/usage: pods
+    controlplane.miscord.win/version: v4
+  name: pods
+  namespace: default
+spec:
+  cidr: 10.232.0.0/19
+---
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRClaimTemplate
+metadata:
+  labels:
+    controlplane.miscord.win/usage: pods
+    controlplane.miscord.win/version: v4
+  name: pods
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      controlplane.miscord.win/usage: pods
+      controlplane.miscord.win/version: v4
+  sizeBit: 8
+---
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRBlock
+metadata:
+  labels:
+    controlplane.miscord.win/usage: pods
+    controlplane.miscord.win/version: v6
+  name: pods-v6
+  namespace: default
+spec:
+  cidr: feff:0002::/32
+---
+apiVersion: controlplane.miscord.win/v1alpha1
+kind: CIDRClaimTemplate
+metadata:
+  labels:
+    controlplane.miscord.win/usage: pods
+    controlplane.miscord.win/version: v6
+  name: pods-v6
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      controlplane.miscord.win/usage: pods
+      controlplane.miscord.win/version: v6
+  sizeBit: 64
