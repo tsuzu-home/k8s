@@ -1,0 +1,10 @@
+cnid:
+  addressClaimTemplates:
+    - pods
+    - pods-v6
+  extra: true
+
+controlPlane:
+  addressClaimTemplates:
+    - nodes
+    - nodes-v6

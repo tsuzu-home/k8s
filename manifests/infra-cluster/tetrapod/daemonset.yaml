@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tetrad-cni-daemon
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        env:
+        - name: TETRAPOD_CLUSTER_NAME
+          value: tsuzu-infra
+        - name: TETRAPOD_CONTROLPLANE_KUBECONFIG
+          value: /kube/kubeconfig
+        - name: TETRAPOD_CONTROLPLANE_NAMESPACE
+          value: tetrapod
+        - name: TETRAPOD_DISABLE_XDP
+          value: "true"
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /kube
+        - name: tetrad-config
+          mountPath: /etc/tetrapod
+      volumes:
+      - secret:
+          secretName: tetrapod-kubeconfig
+        name: kubeconfig
+      - configMap:
+          name: tetrad-config
+        name: tetrad-config
