@@ -1,0 +1,36 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: tetrapod
+  namespace: default
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "name": "tetrapod",
+      "plugins": [
+        {
+          "type": "bridge",
+          "bridge": "cni0",
+          "isDefaultGateway": true,
+          "mtu": 1280,
+          "ipam": {
+            "type": "tetra-pod-ipam",
+            "ipamPlugin": "host-local",
+            "socketPath": "/run/tetrapod/cni.sock"
+          }
+        },
+        {
+          "type": "hostvrf",
+          "vrf": "tetrapod-vrf"
+        },
+        {
+          "type": "tetra-extra-routes",
+          "vrf": "tetrapod-vrf",
+          "socketPath": "/run/tetrapod/cni.sock"
+        },
+        {
+          "type": "route-pods"
+        }
+      ]
+    }
