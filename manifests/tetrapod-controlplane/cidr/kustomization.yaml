@@ -8,3 +8,4 @@ resources:
   - nodes.yaml
   - pods.yaml
   - extra.yaml
+  - rbac.yaml

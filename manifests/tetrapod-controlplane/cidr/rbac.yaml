@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: tetrapod-clients
+  namespace: tetrapod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tetrapod-clients
+subjects:
+- kind: ServiceAccount
+  name: tetrapod-clients
+  namespace: tetrapod
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tetrapod-clients
+  namespace: tetrapod

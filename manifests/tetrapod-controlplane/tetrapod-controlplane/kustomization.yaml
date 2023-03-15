@@ -5,3 +5,4 @@ namespace: kube-system
 
 resources:
   - https://github.com/miscord-dev/tetrapod/releases/download/v0.0.3/controlplane.yaml
+  - tetrapod_clients.yaml
