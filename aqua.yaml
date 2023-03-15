@@ -13,3 +13,4 @@ registries:
 packages:
 - name: helm/helm@v3.11.1
 - name: kubernetes-sigs/kustomize@kustomize/v5.0.0
+- name: kubernetes/kubectl@v1.25.6
