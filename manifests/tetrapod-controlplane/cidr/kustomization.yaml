@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: tetrapod
 
 resources:
+  - namespace.yaml
   - nodes.yaml
   - pods.yaml
   - extra.yaml
