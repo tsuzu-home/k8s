@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: kube-system
 
 resources:
-  - https://github.com/miscord-dev/tetrapod/releases/download/v0.0.3/tetrad.yaml
+  - https://github.com/miscord-dev/tetrapod/releases/download/v0.0.4/tetrad.yaml
   - secret.yaml
 
 patches:
