@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tetrad-gateway
+spec:
+  selector:
+    matchLabels:
+      app: tetrad-gateway
+  template:
+    metadata:
+      labels:
+        app: tetrad-gateway
+    spec:
+      hostNetwork: true
+      serviceAccountName: tetrapod-clients
+      initContainers:
+      - name: iptables
+        image: ghcr.io/miscord-dev/debian-iptables:main
+        securityContext:
+          privileged: true
+        command:
+        - bash
+        - -c
+        - >
+          iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE &&
+          iptables -t mangle -A POSTROUTING -o enp1s0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+      containers:
+      - name: tetrad
+        image: ghcr.io/miscord-dev/tetrapod-tetrad:v0.0.4
+        env:
+        - name: TETRAPOD_DISABLE_XDP
+          value: "true"
+        - name: TETRAPOD_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SKIP_COPY_PLUGINS
+          value: "true"
+        - name: SKIP_COPY_CONFIG
+          value: "true"
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: tetrad-config
+          mountPath: /etc/tetrapod
+      volumes:
+      - name: tetrad-config
+        configMap:
+          name: tetrad-config

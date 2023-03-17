@@ -1,0 +1,13 @@
+clusterName: gateway
+controlPlane:
+  namespace: tetrapod
+  addressClaimTemplates:
+  - nodes
+  - nodes-v6
+  kubeconfig:
+    file: in-cluster
+wireguard:
+  vrf: "-"
+  table: 254
+staticAdvertisedRoutes:
+- 0.0.0.0/0
