@@ -12,7 +12,5 @@ spec:
       "bridge":"br0",
       "promiscMode":true,
       "vlan":100,
-      "ipam":{
-        "type": "dhcp"
-      }
+      "ipam":{}
     }

@@ -1,0 +1,82 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstanceReplicaSet
+metadata:
+  name: tetrapod-dev-nodes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: tetrapod-dev-nodes
+  template:
+    metadata:
+      name: tetrapod-dev-nodes
+      labels:
+        role: tetrapod-dev-nodes
+    spec:
+      terminationGracePeriodSeconds: 60
+      # dnsConfig:
+      #   nameservers:
+      #   - "1.1.1.1"
+      domain:
+        cpu:
+          cores: 4
+        resources:
+          requests:
+            # cpu: "4"
+            memory: 4096M
+          limits:
+            memory: 4096M
+        devices:
+          disks:
+          - name: containerdisk
+            bootOrder: 1
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - name: emptydisk
+            disk:
+              bus: virtio
+          interfaces:
+          - bridge: {}
+            model: virtio
+            name: default
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: ghcr.io/miscord-dev/kubevirt-ubuntu-kubeadm-22.04-1.26.3-00:sha-7d13b8e
+        - name: emptydisk
+          emptyDisk:
+            capacity: 20Gi
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+
+              users:
+              - name: tsuzu
+                groups: [ wheel ]
+                sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+                shell: /bin/bash
+                ssh-authorized-keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1SbtZX9JodwxhazqRkBOTzN2AtyeFlgOnO+bXY+Rm/eabX/s9oqcOITZabnFbn0EmPOXuMCzyDRdTJqA1fJr8eGi4bDZTTjwji9UgxrwPeJURgKus3u1O2P9rT0fpRMt82E9rrkbQWjQee6c0KII0QQO5mmblKSfl8UP7QqzIaUpCfFx/tjty7at+qrPuYo5ulI8eQ6RNXYzTLVgAtdFWZWz3sNLSkHAGyciOs3vzqvXlskGfCl6XRwZYiPG/nv9fRRdOaIIR/ghWHbjOsnkqx8STKmDCDTdQN1bSc0IPZPdoMRRHDHYNhrAIvVpLWoha/crICLwELhiLxe5d4BdX tsuzu.0623@gmail.com
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDA9ugEwWlLayfyLAE3ySDddsSZoJknbWY/5byVlJGEven1Kzv/LEYpfhHE15IQl/bMBewTNSBYlUT6k8PNXyObESJdrCWCJNpKC6/25OOuTW19cYufQPYzOJOCksnJWanyDbvUspJdIxi+IdhSEm13EZWKfoP2jDnu8gIBCUa8+bDuM67oU4wtIHS1SBB2XAS4o3UY2UvL34ipKM1HYlthaRiPd7wrsSSnjfV+4N1UfMKh9KKuQitFfAw7REGNxzgbiz3TK72JwM9Lb7O7dqn/Vyy/25sXjer/gGiywkvHTKeVpijwBfw6tRLBCgEqUbsXlzonq8hKkbb5TQhFoZ+zerK9fpDbw2UWL8ULD1x2nvsfMbVVPVbDm5J23vN887Su7Lue/zj2x+2dKPT+RZlrdKGuUdhY2d5pA/UNDSGYVBX018CmOKU+TtG4V7kQMWI9HCcHYnToVZharXcV/yHfCm5/cNgCoFOjCYE4JvWzUP5JJDzyYmiIHEeFs1GsGL0= root@basil
+              write_files:
+              - permissions: '0644'
+                path: /etc/netplan/99-config.yaml
+                content: |
+                  network:
+                    ethernets:
+                      enp1s0:
+                        dhcp4: true
+                        dhcp6: true
+                        critical: yes
+                    version: 2
+          # cloudInitConfigDrive:
+          #   secretRef:
+          #     name: k8s-nodes-cloud-init
+      networks:
+        - multus:
+            networkName: default/bridge-network
+          name: default

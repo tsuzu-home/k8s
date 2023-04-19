@@ -1,0 +1,55 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstanceReplicaSet
+metadata:
+  name: k8s-nodes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: k8s-nodes
+  template:
+    metadata:
+      name: k8s-nodes
+      labels:
+        role: k8s-nodes
+    spec:
+      terminationGracePeriodSeconds: 60
+      dnsConfig:
+        nameservers:
+        - "1.1.1.1"
+      domain:
+        resources:
+          requests:
+            cpu: "4"
+            memory: 4096M
+        devices:
+          disks:
+          - name: containerdisk
+            bootOrder: 1
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - name: emptydisk
+            disk:
+              bus: virtio
+          interfaces:
+          - bridge: {}
+            model: virtio
+            name: default
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: ghcr.io/miscord-dev/kubevirt-fcos:sha-5816741
+        - name: emptydisk
+          emptyDisk:
+            capacity: 20Gi
+        - name: cloudinitdisk
+          cloudInitConfigDrive:
+            secretRef:
+              name: k8s-nodes-cloud-init
+      networks:
+        - multus:
+            networkName: default/tetrapod
+          name: default

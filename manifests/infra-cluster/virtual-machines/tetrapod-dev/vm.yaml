@@ -1,0 +1,78 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: ubuntu-vm
+  namespace: default
+spec:
+  dataVolumeTemplates:
+  - metadata:
+      creationTimestamp: null
+      name: ubuntu-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50G
+        storageClassName: local-path
+      source:
+        http:
+          url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+  running: true
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/vm: vm-datavolume
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: datavolumevolume
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          interfaces:
+          - bridge: {}
+            model: virtio
+            name: default
+        machine:
+          type: q35
+        resources:
+          requests:
+            cpu: "4"
+            memory: 8192M
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: ubuntu-dv
+        name: datavolumevolume
+      - cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            ssh_pwauth: True
+            password: ubuntu
+            chpasswd: { expire: False }
+            ssh_authorized_keys:
+              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1SbtZX9JodwxhazqRkBOTzN2AtyeFlgOnO+bXY+Rm/eabX/s9oqcOITZabnFbn0EmPOXuMCzyDRdTJqA1fJr8eGi4bDZTTjwji9UgxrwPeJURgKus3u1O2P9rT0fpRMt82E9rrkbQWjQee6c0KII0QQO5mmblKSfl8UP7QqzIaUpCfFx/tjty7at+qrPuYo5ulI8eQ6RNXYzTLVgAtdFWZWz3sNLSkHAGyciOs3vzqvXlskGfCl6XRwZYiPG/nv9fRRdOaIIR/ghWHbjOsnkqx8STKmDCDTdQN1bSc0IPZPdoMRRHDHYNhrAIvVpLWoha/crICLwELhiLxe5d4BdX
+              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCgtc1YPniSsS/KvHo3Dy7GIrIugjgolAAHiSt/2ib3b80RfGFJW9Kuof4yRQzXU8BpLMHE25wo/tVwx1HmtcW/XQdesZDaLG4Luh5njhhadgBaU3bWyLdGqR99D1cdOOyqw61SmKEiqypFAfuVKtGY10OwhTBzthXZXaMDW80JOpttCyN1PGT49mv3g7W3X0rWiLy0HISzB6X/L/d1IFhpFm1J1ZK+rUmnGKcFlJ6I6TLT67dhLGDSq0Co9w6N3a2RJ4DWMa6acBEErIh2/bFDgFAWAivETZ6ckM7EYlg5bg+5aGdw+6U3nwbaZgstak4zaJdHbonHQljrVd1vuHBngflkTKPn1FzIp25x7M1EVl2OSBo7IUXCZADAPd1ZFdKhgKveILbsn2Sf5ZsWC/2QzlPDvvZPi6X09NIGg6oNDdp2SP9NYoFUfyPZLdsxWK9dB63ih19DKjKCvizKV8lqLbC4ArfHbtwzdrxo+UDINKxuEqtRPELXvGPnyHwrs/0= root@tsuzu-celeron
+            users:
+            - name: tsuzu
+              ssh_import_id: gh:tsuzu
+              lock_passwd: false
+              passwd: $6$rounds=4096$4Ntk8QU9UP6PeQj7$GJ.hG/a95B3GNI4oyE4tSlqtakiHjE7rKunnP6N3Q6Tb3TRKCm2asT3T/SuGs5yEOD5luu6zt82JNJjyXjPmV0
+              shell: /bin/bash
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              uid: 1000
+            chpasswd:
+              list: |
+                root:passwordd
+              expire: False
+        name: cloudinitdisk
+      networks:
+        - multus:
+            networkName: default/bridge-network
+          name: default

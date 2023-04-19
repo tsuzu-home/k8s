@@ -1,0 +1,145 @@
+{
+  "ignition": {
+    "version": "3.3.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "groups": [
+          "sudo"
+        ],
+        "name": "tsuzu",
+        "passwordHash": "$y$j9T$BITTuHvZIvf4hPr5c.f4O/$LXFBIU8f0pM5NZbH/UNf/VdmI7n0KcsGrN69hvJyoFD",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDA9ugEwWlLayfyLAE3ySDddsSZoJknbWY/5byVlJGEven1Kzv/LEYpfhHE15IQl/bMBewTNSBYlUT6k8PNXyObESJdrCWCJNpKC6/25OOuTW19cYufQPYzOJOCksnJWanyDbvUspJdIxi+IdhSEm13EZWKfoP2jDnu8gIBCUa8+bDuM67oU4wtIHS1SBB2XAS4o3UY2UvL34ipKM1HYlthaRiPd7wrsSSnjfV+4N1UfMKh9KKuQitFfAw7REGNxzgbiz3TK72JwM9Lb7O7dqn/Vyy/25sXjer/gGiywkvHTKeVpijwBfw6tRLBCgEqUbsXlzonq8hKkbb5TQhFoZ+zerK9fpDbw2UWL8ULD1x2nvsfMbVVPVbDm5J23vN887Su7Lue/zj2x+2dKPT+RZlrdKGuUdhY2d5pA/UNDSGYVBX018CmOKU+TtG4V7kQMWI9HCcHYnToVZharXcV/yHfCm5/cNgCoFOjCYE4JvWzUP5JJDzyYmiIHEeFs1GsGL0="
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "directories": [
+      {
+        "overwrite": false,
+        "path": "/opt/cni/bin"
+      },
+      {
+        "overwrite": false,
+        "path": "/var/usr/libexec/kubernetes"
+      }
+    ],
+    "disks": [
+      {
+        "device": "/dev/vdc",
+        "partitions": [
+          {
+            "label": "var",
+            "sizeMiB": 0
+          }
+        ],
+        "wipeTable": true
+      }
+    ],
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/modules-load.d/k8s.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,overlay%0Abr_netfilter%0A"
+        }
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/sysctl.d/k8s.conf",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/8pLLdFLKspMSU+FUrp5abrJiTk5upkFJYlJOanFCgq2CoZc+NSZQRXC1GUWlJnoZRbEp+UXlScWpSigA5A6QAAAAP//GxhMCXgAAAA="
+        }
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/zincati/config.d/90-disable-auto-updates.toml",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5Bupdates%5D%0Aenabled%20%3D%20false%0A"
+        }
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/selinux/config",
+        "contents": {
+          "compression": "",
+          "source": "data:,SELINUX%3Dpermissive%0ASELINUXTYPE%3Dtargeted%0A"
+        },
+        "mode": 436
+      },
+      {
+        "path": "/home/tsuzu/install-containerd",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/8RUTW8aPRC++1fMu+HwNq1tqEJTIXGICFIjoSCRqj1G3vUEVvgD2V5CQ/nvlc0SFkibXKpe2MUzXj9fnrP/gOel4bnwM0I8BqBYEXIGReUU0NEYZiEsfI/zaRlmVc4Kq3lhTRClQSebrw4VCo+eS/tolBWSLzvskrUbPTQtUFWaakWFlp8uWBCOTZ/IGfhKWgjCwWD1tHwAXnnHlS2Egsb+832/03B+tNv/8AF1ERRIgdoa6jDiOC2jEblCoNTYx8bnX+NtF2ieuz13lSleZt1h3VRliePu/NL4IJQCquGy24V9Q4Ms99GNWNpSTE3nhFyPv9+OxlfX99c3k37G7SJE2zIymNwMvo7uvw0ndzfj23627LCPXdbOyGQ4Gl7dDftZ6/8tJX83euYkFZt/9qy0O/jch6gIC6vwLiNXk8GXfpagZSRB13NZOqALyFpNJBkhtV6QvaDXvMrRGQzoqS+nnheupMFa5V9QrbU+pLKJ3UVQ9KRQx6e1jjA3dQQy+LlPEB3AAUygqydCCnm4umW2w0+pQ20DUiM00mjT78VqrWt1N+nuJDy8xsPXkbWQ+kN8Kgyb+pyZthLer+C0vvOq4WKbXUQT9849y+vEI9tKXHl0MY1owpHap0AbqmqZOhfzKQ+oF0rEDek3cIk5r2FxVeZ8e2Nk/dyVmEe3LAtMmqOEzPdSgPPS9FrrpsSb3nRvDCJwDMUrHz3K2xt2MPnPdBJS806b1q+ssObhr4jC5PExhLxxpP2prT6FHNyE8V7DNyY/DYoEuQgqa8Y9jrl6vfZ1ufsPuxlGfgUAAP//zG15ZIMGAAA="
+        },
+        "mode": 509
+      },
+      {
+        "path": "/etc/systemd/logind.conf.d/inhibitors.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BLogin%5D%0AInhibitDelayMaxSec%3D45s%0A"
+        }
+      },
+      {
+        "path": "/etc/sysctl.d/max-user-watches.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,fs.inotify.max_user_watches%3D16184%0A"
+        }
+      },
+      {
+        "path": "/etc/sysctl.d/reverse-path-filter.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,net.ipv4.conf.default.rp_filter%3D0%0Anet.ipv4.conf.*.rp_filter%3D0%0A"
+        }
+      },
+      {
+        "path": "/etc/systemd/system.conf.d/accounting.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BManager%5D%0ADefaultCPUAccounting%3Dyes%0ADefaultMemoryAccounting%3Dyes%0ADefaultBlockIOAccounting%3Dyes%0A"
+        }
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/containerd/config.toml",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/6RQzWr0MAy86ymM75/zdW855NRH6HEJwbFFEE0sI8mh+/Ylyy5koYdCTxppRqOfHUWJixvcBYTZ3OB8t0fpVpq7xMUiFZTsQS0a3llp5ZVps2CsKG5wJg2BeZs0sRzyf33fw3WRmkaIOQuq/mBygkE5fXpolN3g/sPyiNe6toWKBk8cTurDOexvIQn5EbDEecVJcaXSvp77/Kb3XJdWjDbUA6QRHulkt3p/wKvJoQn7xf9tSuBqxEVH+Lip4ZbfF+FWnxd8BwAA//+dvNVSpgEAAA=="
+        }
+      }
+    ],
+    "filesystems": [
+      {
+        "device": "/dev/disk/by-partlabel/var",
+        "format": "xfs",
+        "label": "var",
+        "path": "/var",
+        "wipeFilesystem": false
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "# Generated by Butane\n[Unit]\nBefore=local-fs.target\nRequires=systemd-fsck@dev-disk-by\\x2dpartlabel-var.service\nAfter=systemd-fsck@dev-disk-by\\x2dpartlabel-var.service\n\n[Mount]\nWhere=/var\nWhat=/dev/disk/by-partlabel/var\nType=xfs\n\n[Install]\nRequiredBy=local-fs.target",
+        "enabled": true,
+        "name": "var.mount"
+      },
+      {
+        "contents": "[Unit]\nDescription=Layer conntrack with rpm-ostree\nWants=network-online.target\nAfter=network-online.target\n# We run before `zincati.service` to avoid conflicting rpm-ostree\n# transactions.\nBefore=zincati.service\nConditionPathExists=!/var/lib/%N.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\n# `--allow-inactive` ensures that rpm-ostree does not return an error\n# if the package is already installed. This is useful if the package is\n# added to the root image in a future Fedora CoreOS release as it will\n# prevent the service from failing.\nExecStart=/usr/bin/rpm-ostree install --reboot conntrack\nExecStart=/bin/touch /var/lib/%N.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "rpm-ostree-install-conntrack.service"
+      }
+    ]
+  }
+}

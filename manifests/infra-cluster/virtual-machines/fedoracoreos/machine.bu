@@ -1,0 +1,175 @@
+variant: fcos
+version: 1.4.0
+passwd:
+  users:
+    - name: tsuzu
+      groups:
+      - sudo
+      password_hash: $y$j9T$BITTuHvZIvf4hPr5c.f4O/$LXFBIU8f0pM5NZbH/UNf/VdmI7n0KcsGrN69hvJyoFD
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDA9ugEwWlLayfyLAE3ySDddsSZoJknbWY/5byVlJGEven1Kzv/LEYpfhHE15IQl/bMBewTNSBYlUT6k8PNXyObESJdrCWCJNpKC6/25OOuTW19cYufQPYzOJOCksnJWanyDbvUspJdIxi+IdhSEm13EZWKfoP2jDnu8gIBCUa8+bDuM67oU4wtIHS1SBB2XAS4o3UY2UvL34ipKM1HYlthaRiPd7wrsSSnjfV+4N1UfMKh9KKuQitFfAw7REGNxzgbiz3TK72JwM9Lb7O7dqn/Vyy/25sXjer/gGiywkvHTKeVpijwBfw6tRLBCgEqUbsXlzonq8hKkbb5TQhFoZ+zerK9fpDbw2UWL8ULD1x2nvsfMbVVPVbDm5J23vN887Su7Lue/zj2x+2dKPT+RZlrdKGuUdhY2d5pA/UNDSGYVBX018CmOKU+TtG4V7kQMWI9HCcHYnToVZharXcV/yHfCm5/cNgCoFOjCYE4JvWzUP5JJDzyYmiIHEeFs1GsGL0=
+storage:
+  disks:
+    - device: /dev/vdc
+      wipe_table: true
+      partitions:
+        # - label: etc
+        #   size_mib: 8192
+        - label: var
+          size_mib: 0
+  filesystems:
+    # - device: /dev/disk/by-partlabel/etc
+    #   label: etc
+    #   format: xfs
+    #   wipe_filesystem: false
+    #   path: /etc
+    #   with_mount_unit: true
+    - device: /dev/disk/by-partlabel/var
+      label: var
+      format: xfs
+      wipe_filesystem: false
+      path: /var
+      with_mount_unit: true
+  directories:
+  - path: /opt/cni/bin
+    overwrite: false
+  - path: /var/usr/libexec/kubernetes
+    overwrite: false
+  # links:
+  # - path: /usr/libexec/kubernetes
+  #   overwrite: true
+  #   target: /var/usr/libexec/kubernetes
+  files:
+  - path: /etc/modules-load.d/k8s.conf
+    overwrite: true
+    contents:
+      inline: |
+        overlay
+        br_netfilter
+  - path: /etc/sysctl.d/k8s.conf
+    overwrite: true
+    contents:
+      inline: |
+        net.bridge.bridge-nf-call-iptables  = 1
+        net.bridge.bridge-nf-call-ip6tables = 1
+        net.ipv4.ip_forward                 = 1
+  - path: /etc/zincati/config.d/90-disable-auto-updates.toml
+    overwrite: true
+    contents:
+      inline: |
+        [updates]
+        enabled = false
+  - path: /etc/selinux/config
+    mode: 436
+    overwrite: true
+    contents:
+      inline: |
+        SELINUX=permissive
+        SELINUXTYPE=targeted
+  - path: /home/tsuzu/install-containerd
+    mode: 509
+    contents:
+      inline: |
+        #! /bin/bash
+
+        set -eu
+
+        # curl -LO https://github.com/containerd/containerd/releases/download/v1.7.0/containerd-1.7.0-linux-amd64.tar.gz
+        # sudo tar Cxzvf /usr/local containerd-*.tar.gz
+        # rm *.tar.gz
+        # sudo systemctl daemon-reload
+        # sudo systemctl enable --now containerd
+        
+        # curl -LO https://github.com/opencontainers/runc/releases/download/v1.1.5/runc.amd64
+        # sudo install -m 755 runc.amd64 /usr/local/sbin/runc
+        # rm runc.*
+
+        DOWNLOAD_DIR="/opt/bin"
+        CRICTL_VERSION="v1.25.0"
+        RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
+        ARCH="amd64"
+        sudo mkdir -p "$DOWNLOAD_DIR"
+
+        curl -L "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-${ARCH}.tar.gz" | sudo tar -C $DOWNLOAD_DIR -xz
+
+        cd $DOWNLOAD_DIR
+        sudo curl -L --remote-name-all https://dl.k8s.io/release/${RELEASE}/bin/linux/${ARCH}/{kubeadm,kubelet}
+        sudo chmod +x {kubeadm,kubelet}
+
+        RELEASE_VERSION="v0.4.0"
+        curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSION}/cmd/kubepkg/templates/latest/deb/kubelet/lib/systemd/system/kubelet.service" | sed "s:/usr/bin:${DOWNLOAD_DIR}:g" | sudo tee /etc/systemd/system/kubelet.service
+        sudo mkdir -p /etc/systemd/system/kubelet.service.d
+        curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSION}/cmd/kubepkg/templates/latest/deb/kubeadm/10-kubeadm.conf" | sed "s:/usr/bin:${DOWNLOAD_DIR}:g" | sudo tee /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+        sudo systemctl enable --now containerd
+        sudo systemctl enable --now kubelet
+
+        sudo curl -LO "https://dl.k8s.io/release/${RELEASE}/bin/linux/amd64/kubectl"
+        sudo chmod 755 kubectl
+        sudo mv kubectl /opt/bin
+  - path: /etc/systemd/logind.conf.d/inhibitors.conf
+    contents:
+      inline: |
+        [Login]
+        InhibitDelayMaxSec=45s
+  - path: /etc/sysctl.d/max-user-watches.conf
+    contents:
+      inline: |
+        fs.inotify.max_user_watches=16184
+  - path: /etc/sysctl.d/reverse-path-filter.conf
+    contents:
+      inline: |
+        net.ipv4.conf.default.rp_filter=0
+        net.ipv4.conf.*.rp_filter=0
+  - path: /etc/systemd/system.conf.d/accounting.conf
+    contents:
+      inline: |
+        [Manager]
+        DefaultCPUAccounting=yes
+        DefaultMemoryAccounting=yes
+        DefaultBlockIOAccounting=yes
+  - path: /etc/containerd/config.toml
+    overwrite: true
+    contents:
+      inline: |
+        version = 2
+        root = "/var/lib/containerd"
+        state = "/run/containerd"
+        subreaper = true
+        oom_score = -999
+        [grpc]
+        address = "/run/containerd/containerd.sock"
+        uid = 0
+        gid = 0
+        [plugins."io.containerd.grpc.v1.cri"]
+        enable_selinux = true
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+        runtime_type = "io.containerd.runc.v2"
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+        SystemdCgroup = true
+systemd:
+  units:
+    - name: rpm-ostree-install-conntrack.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer conntrack with rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        # We run before `zincati.service` to avoid conflicting rpm-ostree
+        # transactions.
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        # `--allow-inactive` ensures that rpm-ostree does not return an error
+        # if the package is already installed. This is useful if the package is
+        # added to the root image in a future Fedora CoreOS release as it will
+        # prevent the service from failing.
+        ExecStart=/usr/bin/rpm-ostree install --reboot conntrack
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
