@@ -25,6 +25,8 @@ spec:
         env:
         - name: EULA
           value: "TRUE"
+        - name: MAX_MEMORY
+          value: "12G"
         volumeMounts:
         - name: data
           mountPath: /data

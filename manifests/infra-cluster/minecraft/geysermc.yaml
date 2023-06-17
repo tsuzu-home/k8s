@@ -28,7 +28,7 @@ spec:
           mountPath: /mnt/config
       containers:
       - name: geysermc
-        image: ghcr.io/tsuzu/geysermc-docker:sha-7d93b4a
+        image: ghcr.io/tsuzu/geysermc-docker:0.0.2
         command:
         - java
         - -Xms1024M
