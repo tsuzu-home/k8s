@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: annict-epgstation-connector
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: annict-epgstation-connector
+  name: annict-epgstation-connector
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: connector
+            image: ghcr.io/musaprg/annict-epgstation-connector:v0.1.2
+            args:
+            - sync
+            envFrom:
+            - secretRef:
+                name: annict-epgstation-connector
+            env:
+            - name: EPGSTATION_ENDPOINT
+              value: http://10.24.0.7:8888/api
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  namespace: annict-epgstation-connector
+  name: annict-epgstation-connector
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword-store
+  target:
+    creationPolicy: Owner
+  data:
+  - secretKey: ANNICT_API_TOKEN
+    remoteRef:
+      key: annict-epgstation-connector
+      property: token
