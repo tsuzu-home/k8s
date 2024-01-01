@@ -1,0 +1,7 @@
+dbs:
+  - path: /db/database.db
+    replicas:
+      - type: s3
+        endpoint: http://10.24.0.60:31571
+        bucket: epgstation
+        path: epgstation.db

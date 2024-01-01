@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: minio-console
+  name: minio-console
+  namespace: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio-console
+  template:
+    metadata:
+      labels:
+        app: minio-console
+    spec:
+      containers:
+      - name: minio
+        image: quay.io/minio/console:latest
+        env:
+        - name: CONSOLE_PBKDF_PASSPHRASE
+          valueFrom:
+            secretKeyRef:
+              name: minio-console
+              key: CONSOLE_PBKDF_PASSPHRASE
+        - name: CONSOLE_PBKDF_SALT
+          valueFrom:
+            secretKeyRef:
+              name: minio-console
+              key: CONSOLE_PBKDF_SALT
+        - name: CONSOLE_MINIO_SERVER
+          value: http://10.24.0.60:31571
+        
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: minio-console
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword-store
+  target:
+    creationPolicy: Owner
+  data:
+  - secretKey: CONSOLE_PBKDF_PASSPHRASE
+    remoteRef:
+      key: minio-console
+      property: CONSOLE_PBKDF_PASSPHRASE
+  - secretKey: CONSOLE_PBKDF_SALT
+    remoteRef:
+      key: minio-console
+      property: CONSOLE_PBKDF_SALT

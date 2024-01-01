@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: minio
+  name: minio
+  namespace: minio
+spec:
+  replicas: 1
+  serviceName: "minio"
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      initContainers:
+      - name: init-ca-certs
+        image: quay.io/minio/minio:latest
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - cat /etc/ssl/certs/ca-certificates.crt > /dst/ca-certificates.crt && cat /src/*.crt >> /dst/ca-certificates.crt
+        volumeMounts:
+        - mountPath: /dst/
+          name: ca-certs
+        - mountPath: /src/
+          name: ca-certs-base
+      containers:
+      - name: minio
+        image: quay.io/minio/minio:latest
+        command:
+        - /bin/bash
+        - -c
+        args:
+        - minio server /data --console-address :9090
+        env:
+        - name: MINIO_IDENTITY_OPENID_CONFIG_URL
+          value: https://k8s.tsuzu.dev:6443/.well-known/openid-configuration
+        - name: MINIO_IDENTITY_OPENID_CLIENT_ID
+          value: sts.amazonaws.com
+        - name: MINIO_IDENTITY_OPENID_CLIENT_SECRET
+          value: dummy
+        - name: MINIO_IDENTITY_OPENID_ROLE_POLICY
+          value: readwrite
+        - name: MINIO_IDENTITY_OPENID_DISPLAY_NAME
+          value: k8s
+        - name: MINIO_ROOT_USER
+          value: admin
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minio-credential
+              key: password
+        volumeMounts:
+        - mountPath: /data
+          name: localvolume
+        - mountPath: /root/.minio/certs/CAs
+          name: ca-certs
+      volumes:
+      - name: ca-certs
+        emptyDir: {}
+      - name: ca-certs-base
+        configMap:
+          name: minio-ca-certs
+  volumeClaimTemplates:
+  - metadata:
+      name: localvolume
+    spec:
+      storageClassName: openebs-zfspv-default
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1000Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+  name: minio
+  namespace: minio
+spec:
+  type: NodePort
+  ports:
+  - name: console
+    port: 9090
+    targetPort: 9090
+  - name: api
+    port: 9000
+    targetPort: 9000
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-ca-certs
+  namespace: minio
+data:
+  kube-root-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIBeDCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+    dmVyLWNhQDE2Nzc2MDUzODMwHhcNMjMwMjI4MTcyOTQzWhcNMzMwMjI1MTcyOTQz
+    WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2Nzc2MDUzODMwWTATBgcqhkjO
+    PQIBBggqhkjOPQMBBwNCAASDh5w7CLNT0nh8fO+48TyDmm+9D1T9l8Jay/tvi3ip
+    xAlmdTE6EWDA0b7WPkkcxA77SEdMogOOejF5x9tarJGUo0IwQDAOBgNVHQ8BAf8E
+    BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUfbH4+jafFwi0rw2ZRNSa
+    QaQC38AwCgYIKoZIzj0EAwIDSQAwRgIhAPXDf2vLlmdeLPbL2pnI1q6twYvKJBVy
+    bfn/xqAgdjPbAiEAlg3SQ39L/gypqZ1II/tD8oeEMRlH3WuUvGtYXlI2gvg=
+    -----END CERTIFICATE-----

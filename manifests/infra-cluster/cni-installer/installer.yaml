@@ -12,13 +12,29 @@ spec:
       labels:
         app: cni-plugins-installer
     spec:
+      hostNetwork: true
+      initContainers:
+      - name: sysctl
+        image: busybox
+        securityContext:
+          privileged: true
+        command:
+        - sh
+        - -c
+        - >
+          sysctl fs.inotify.max_user_instances=512 &&
+          sysctl fs.inotify.max_user_watches=65536
       containers:
       - name: installer
         image: node:18-slim
         command:
         - bash
         - -c
-        - npx zx /scripts/install.mjs && sleep infinity
+        - >
+          npx zx /scripts/install.mjs &&
+          sysctl fs.inotify.max_user_instances=512
+          sysctl fs.inotify.max_user_watches=65536
+          sleep infinity
         volumeMounts:
         - name: script
           mountPath: /scripts

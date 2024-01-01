@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: epgstation
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: epgstation
+  namespace: epgstation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: epgstation
+  serviceName: epgstation  
+  template:
+    metadata:
+      labels:
+        app: epgstation
+    spec:
+      initContainers:
+      - name: litestream-restore
+        image: litestream/litestream:0.3
+        args: ['restore', '-if-db-not-exists', '-if-replica-exists', '-config', '/config/litestream.yml', '/db/database.db']
+        env:
+        - name: AWS_ROLE_ARN
+          value: arn:minio:iam:::role/oxnUw3DAuQF1uggjXGxI2AmW8IA
+        - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+        volumeMounts:
+        - name: aws-iam-token
+          readOnly: true
+          mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+        - name: db
+          mountPath: /db
+        - name: litestream-config
+          mountPath: /config
+          readOnly: true
+      containers:
+      - name: epgstation
+        image: ghcr.io/tsuzu/epgstation:main
+        volumeMounts:
+        - name: db
+          mountPath: /app/data
+        - name: recorded
+          mountPath: /app/recorded
+        - name: thumbnail
+          mountPath: /app/thumbnail
+        - name: epgstation-config
+          mountPath: /app/config
+      - name: litestream-replicate
+        image: litestream/litestream:0.3
+        args: ['replicate', '-config', '/config/litestream.yml']
+        env:
+        - name: AWS_ROLE_ARN
+          value: arn:minio:iam:::role/oxnUw3DAuQF1uggjXGxI2AmW8IA
+        - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+        volumeMounts:
+        - name: aws-iam-token
+          readOnly: true
+          mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+        - name: db
+          mountPath: /db
+        - name: litestream-config
+          mountPath: /config
+          readOnly: true
+      volumes:
+      - name: aws-iam-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 86400
+              audience: sts.amazonaws.com
+      - name: db
+        emptyDir: {}
+      - name: litestream-config
+        configMap:
+          name: litestream-config
+      - name: recorded
+        persistentVolumeClaim:
+          claimName: recorded
+      - name: thumbnail
+        persistentVolumeClaim:
+          claimName: thumbnail
+      - name: epgstation-config
+        configMap:
+          name: epgstation-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thumbnail
+  namespace: epgstation
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: truenas-nfs
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: recorded
+  namespace: epgstation
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 128Gi
+  storageClassName: truenas-nfs
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: epgstation
+  namespace: epgstation
+spec:
+  ports:
+  - name: http
+    port: 8888
+    protocol: TCP
+    targetPort: 8888
+    nodePort: 31888
+  selector:
+    app: epgstation
+  type: NodePort
