@@ -3,7 +3,7 @@ kind: Kustomization
 
 helmCharts:
   - name: external-secrets
-    version: 0.7.2
+    version: 0.9.11
     repo: https://charts.external-secrets.io
     namespace: kube-system
     releaseName: "external-secrets"
