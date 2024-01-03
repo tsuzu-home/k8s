@@ -25,6 +25,9 @@ spec:
       destination:
         namespace: default
         server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          prune: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
