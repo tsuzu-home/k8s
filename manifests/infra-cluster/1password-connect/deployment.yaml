@@ -60,7 +60,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
         - name: connect-sync
-          image: 1password/connect-sync:1.5.7
+          image: 1password/connect-sync:1.7.2
           resources:
             limits:
               memory: "128Mi"
