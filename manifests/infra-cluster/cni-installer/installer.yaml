@@ -32,8 +32,6 @@ spec:
         - -c
         - >
           npx zx /scripts/install.mjs &&
-          sysctl fs.inotify.max_user_instances=512
-          sysctl fs.inotify.max_user_watches=65536
           sleep infinity
         volumeMounts:
         - name: script

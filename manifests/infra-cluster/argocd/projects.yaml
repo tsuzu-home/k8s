@@ -1,0 +1,66 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-cluster
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://github.com/tsuzu-home/k8s.git
+      revision: HEAD
+      directories:
+      - path: manifests/infra-cluster/*
+  template:
+    metadata:
+      name: 'infra-cluster-{{.path.basename}}'
+    spec:
+      project: infra-cluster
+      source:
+        repoURL: https://github.com/tsuzu-home/k8s.git
+        targetRevision: HEAD
+        path: '{{.path.path}}'
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infra-cluster
+spec:
+  sourceRepos:
+  - 'https://github.com/tsuzu-home/k8s.git'
+  destinations:
+  - namespace: '*'
+    server: https://kubernetes.default.svc
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-github-app
+stringData:
+  type: git
+  url: https://github.com/tsuzu-home/k8s
+  githubAppID: "773381"
+  githubAppInstallationID: "45703610"
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: argocd-github-app
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword-store
+  target:
+    template:
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: repository 
+    creationPolicy: Merge
+  data:
+  - secretKey: githubAppPrivateKey
+    remoteRef:
+      key: ArgoCD-GitHubApp-Credential
+      property: githubAppPrivateKey.pem
