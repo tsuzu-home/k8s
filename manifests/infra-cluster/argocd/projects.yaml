@@ -10,6 +10,8 @@ spec:
       repoURL: https://github.com/tsuzu-home/k8s.git
       revision: HEAD
       directories:
+      - path: manifests/infra-cluster/minio-console
+        exclude: true
       - path: manifests/infra-cluster/*
   template:
     metadata:
