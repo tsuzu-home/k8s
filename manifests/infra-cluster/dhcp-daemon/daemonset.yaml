@@ -16,7 +16,7 @@ spec:
       hostPID: true
       containers:
       - name: dhcp-daemon
-        image: node:18-slim
+        image: node:20-slim
         command:
         - sh
         - -c

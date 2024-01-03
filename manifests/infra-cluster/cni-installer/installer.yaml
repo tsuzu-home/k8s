@@ -26,7 +26,7 @@ spec:
           sysctl fs.inotify.max_user_watches=65536
       containers:
       - name: installer
-        image: node:18-slim
+        image: node:20-slim
         command:
         - bash
         - -c
