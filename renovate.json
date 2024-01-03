@@ -37,6 +37,15 @@
         "https://raw\\.githubusercontent\\.com/(?<depName>[^/]+/[^/]+)/(?<currentValue>[^/]+)/.*"
       ],
       "datasourceTemplate": "github-tags"
+    },
+    {
+      "fileMatch": [
+        ".*\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "image: (?<depName>\\S*):(?<currentValue>\\S*)"
+      ],
+      "datasourceTemplate": "docker"
     }
   ]
 }
