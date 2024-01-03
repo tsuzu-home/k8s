@@ -19,7 +19,7 @@ spec:
             secretName: op-credentials
       initContainers:
         - name: sqlite-permissions
-          image: alpine:3.12
+          image: alpine:3.19
           command:
             - "/bin/sh"
             - "-c"
