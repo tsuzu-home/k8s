@@ -29,6 +29,9 @@ kind: AppProject
 metadata:
   name: infra-cluster
 spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
   sourceRepos:
   - 'https://github.com/tsuzu-home/k8s.git'
   destinations:
