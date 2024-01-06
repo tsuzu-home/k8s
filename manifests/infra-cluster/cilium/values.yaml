@@ -1,12 +1,17 @@
 tunnel: "vxlan"
 
 ipv4NativeRoutingCIDR: 10.42.0.0/16
+ipv6:
+  enabled: true
+ipv6NativeRoutingCIDR: fd00::/104
 
 ipam:
   mode: cluster-pool
   operator:
     clusterPoolIPv4PodCIDRList:
       - 10.42.0.0/16
+    clusterPoolIPv6PodCIDRList:
+      - fd00::/104
 
 cni:
   exclusive: false
