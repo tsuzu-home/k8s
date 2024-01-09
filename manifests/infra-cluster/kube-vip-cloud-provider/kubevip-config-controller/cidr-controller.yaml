@@ -19,7 +19,7 @@ spec:
       - name: controller
         image: node:20-alpine
         command:
-        - bash
+        - sh
         - -c
         - >
           apk update && apk add bash iproute2 &&
