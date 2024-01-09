@@ -19,10 +19,10 @@ spec:
       - name: controller
         image: node:18-slim
         command:
-        - sh
+        - bash
         - -c
         - >
-          npm install -g ip &&
+          npm install ip &&
           npx zx --install /scripts/controller.mjs
         volumeMounts:
         - name: script
