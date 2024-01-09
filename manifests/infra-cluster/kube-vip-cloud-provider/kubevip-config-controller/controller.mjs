@@ -16,16 +16,13 @@ const reconcile = async () => {
     const globalCIDR = ip.toString(buf) + "/64";
     console.log(globalCIDR);
 
-    const patcher = $`kubectl patch configmap/kubevip -n kube-system --type merge --patch-file /dev/stdin`;
-
-    patcher.stdin.write(JSON.stringify({
+    const patch = JSON.stringify({
         data: {
             "cidr-global": globalCIDR,
         },
-    }));
-    patcher.stdin.end();
+    })
 
-    await patcher;
+    await $`kubectl patch configmap/kubevip -n kube-system --type merge --patch-file ${patch}`;
 }
 
 const processor = () => {
