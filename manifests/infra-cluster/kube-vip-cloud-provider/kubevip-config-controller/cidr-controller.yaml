@@ -17,7 +17,7 @@ spec:
       hostNetwork: true
       containers:
       - name: controller
-        image: node:20-alpine
+        image: node:20-buster-slim
         command:
         - sh
         - -c
