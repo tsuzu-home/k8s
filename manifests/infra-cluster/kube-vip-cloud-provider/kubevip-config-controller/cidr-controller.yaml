@@ -17,11 +17,12 @@ spec:
       hostNetwork: true
       containers:
       - name: controller
-        image: node:18-slim
+        image: node:20-alpine
         command:
         - bash
         - -c
         - >
+          apk update && apk add bash iproute2 &&
           mkdir workspace &&
           cd workspace &&
           npm init -y &&
