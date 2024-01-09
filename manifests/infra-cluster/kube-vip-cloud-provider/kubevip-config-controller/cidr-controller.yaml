@@ -22,6 +22,8 @@ spec:
         - bash
         - -c
         - >
+          mkdir workspace &&
+          cd workspace &&
           npm init -y &&
           npm install ip &&
           npx zx --install /scripts/controller.mjs
