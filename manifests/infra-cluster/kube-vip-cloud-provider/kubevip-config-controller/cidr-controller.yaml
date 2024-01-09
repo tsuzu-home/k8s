@@ -26,7 +26,8 @@ spec:
           cd workspace &&
           npm init -y &&
           npm install ip &&
-          npx zx --install /scripts/controller.mjs
+          cp /scripts/controller.mjs . &&
+          npx zx --install --verbose controller.mjs
         volumeMounts:
         - name: script
           mountPath: /scripts
