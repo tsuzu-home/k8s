@@ -22,7 +22,7 @@ spec:
         - bash
         - -c
         - >
-          echo {} > package.json &&
+          npm init -y &&
           npm install ip &&
           npx zx --install /scripts/controller.mjs
         volumeMounts:
