@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
 - https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/v0.0.8/manifest/kube-vip-cloud-controller.yaml
 - config.yaml
+- kubevip-config-controller
