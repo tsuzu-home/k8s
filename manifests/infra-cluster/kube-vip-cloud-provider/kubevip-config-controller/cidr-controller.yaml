@@ -22,7 +22,7 @@ spec:
         - bash
         - -c
         - >
-          npx zx /scripts/controller.mjs
+          npx zx --install /scripts/controller.mjs
         volumeMounts:
         - name: script
           mountPath: /scripts
