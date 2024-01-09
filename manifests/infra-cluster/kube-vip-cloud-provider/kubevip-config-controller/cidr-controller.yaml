@@ -22,7 +22,7 @@ spec:
         - sh
         - -c
         - >
-          apk update && apk add bash iproute2 &&
+          apk update && apk add bash iproute2 kubectl &&
           mkdir workspace &&
           cd workspace &&
           npm init -y &&
