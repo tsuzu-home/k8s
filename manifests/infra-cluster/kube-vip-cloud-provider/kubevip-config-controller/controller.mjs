@@ -22,7 +22,7 @@ const reconcile = async () => {
         },
     })
 
-    await $`kubectl patch configmap/kubevip -n kube-system --type merge --patch-file ${patch}`;
+    await $`kubectl patch configmap/kubevip -n kube-system --type merge -p ${patch}`;
 }
 
 const processor = () => {
