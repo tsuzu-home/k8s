@@ -9,6 +9,7 @@ env:
   bgp_routerinterface: br0
   bgp_peeraddress: 10.24.0.1
   bgp_peeras: 64512
+  vip_loglevel: 5
 
 config:
   address: 10.23.0.1
