@@ -5,7 +5,6 @@ env:
   cp_enable: "true"
   vip_cidr: "32"
   lb_enable: "false"
-  lb_class_only: "true"
   bgp_as: 64512
   bgp_routerinterface: br0
   bgp_peeraddress: 10.24.0.1
