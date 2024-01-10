@@ -32,4 +32,4 @@ const processor = () => {
 }
 
 processor();
-setInterval(processor, 60 * 1000);
+setInterval(processor, 60 * 60 * 1000);
