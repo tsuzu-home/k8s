@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-vip-cloud-provider
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: kube-vip-cloud-provider
+        env:
+        - name: KUBEVIP_NAMESPACE
+          value: kube-system
