@@ -12,7 +12,8 @@ env:
   vip_loglevel: 5
 
 image:
-  tag: v0.6.4
+  repository: ghcr.io/kube-vip/kube-vip
+  tag: latest
 
 config:
   address: 10.23.0.1
