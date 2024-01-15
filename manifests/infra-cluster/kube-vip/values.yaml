@@ -1,15 +1,15 @@
 env:
   vip_arp: "false"
   bgp_enable: "true"
-  vip_interface: br0
+  vip_interface: lo
   cp_enable: "true"
   vip_cidr: "32"
   lb_enable: "false"
   bgp_as: 64512
   bgp_routerinterface: br0
-  bgp_peeraddress: 10.24.0.1
-  bgp_peeras: 64512
-  vip_loglevel: 5
+  bgp_peers: 10.24.0.1:64512::true,[fdff::1]:64512::true
+  # bgp_peeraddress: 10.24.0.1
+  # bgp_peeras: 64512
 
 image:
   tag: v0.6.4
