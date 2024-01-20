@@ -9,7 +9,7 @@ metadata:
   name: minecraft-server
   namespace: minecraft
 spec:
-  replicas: 1
+  replicas: 0
   serviceName: minecraft
   selector:
     matchLabels:
