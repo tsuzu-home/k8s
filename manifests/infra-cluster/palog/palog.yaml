@@ -24,6 +24,6 @@ spec:
         image: ghcr.io/miscord-dev/palog:v0.0.1
         env:
         - name: RCON_ENDPOINT
-          value: palworld:25575
+          value: palworld.palworld.svc.cluster.local:25575
         - name: RCON_PASSWORD
           value: verystrongpassword
