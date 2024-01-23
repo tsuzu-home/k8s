@@ -19,8 +19,6 @@ spec:
       labels:
         app: palog
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: vanilla
       containers:
       - name: palog
         image: ghcr.io/miscord-dev/palog:v0.0.1
