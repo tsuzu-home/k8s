@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: palog
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: palog
+  namespace: palog
+spec:
+  replicas: 1
+  serviceName: palog
+  selector:
+    matchLabels:
+      app: palog
+  template:
+    metadata:
+      labels:
+        app: palog
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: vanilla
+      containers:
+      - name: palog
+        image: ghcr.io/miscord-dev/palog:v0.0.1
+        env:
+        - name: RCON_ENDPOINT
+          value: palworld:25575
+        - name: RCON_PASSWORD
+          value: verystrongpassword
