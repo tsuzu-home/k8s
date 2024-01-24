@@ -23,7 +23,7 @@ spec:
     spec:
       initContainers:
       - name: init-ca-certs
-        image: quay.io/minio/minio:latest
+        image: quay.io/minio/minio:RELEASE.2024-01-18T22-51-28Z
         command:
         - /bin/sh
         - -c
@@ -36,7 +36,7 @@ spec:
           name: ca-certs-base
       containers:
       - name: minio
-        image: quay.io/minio/minio:latest
+        image: quay.io/minio/minio:RELEASE.2024-01-18T22-51-28Z
         command:
         - /bin/bash
         - -c
