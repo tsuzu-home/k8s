@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: palog
-        image: ghcr.io/miscord-dev/palog:main
+        image: ghcr.io/miscord-dev/palog:v0.0.3
         env:
         - name: RCON_ENDPOINT
           value: palworld.palworld.svc.cluster.local:25575
