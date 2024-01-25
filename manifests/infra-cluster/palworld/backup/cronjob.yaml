@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-backup
+  namespace: palworld
+spec:
+  schedule: "0,10,20,30,40,50 * * * *" # UTC
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            kubernetes.io/hostname: vanilla
+          restartPolicy: Never
+          initContainers:
+            - name: init-cred
+              image: public.ecr.aws/aws-cli/aws-cli:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - sh
+                - /scripts/init-cred.sh
+              env:
+              - name: AWS_REGION
+                value: tsuzu
+              - name: AWS_DEFAULT_REGION
+                value: tsuzu
+              - name: AWS_ROLE_ARN
+                value: arn:minio:iam:::role/oxnUw3DAuQF1uggjXGxI2AmW8IA
+              - name: AWS_WEB_IDENTITY_TOKEN_FILE
+                value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+              - name: AWS_ENDPOINT_URL_STS
+                value: http://10.24.0.60:31571
+              - name: AWS_ENDPOINT_URL_S3
+                value: http://10.24.0.60:31571
+              volumeMounts:
+                - name: credentials
+                  mountPath: /root/.aws
+                - name: restic-script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: aws-iam-token
+                  readOnly: true
+                  mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+          containers:
+            - name: backup
+              image: restic/restic:0.16.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - sh
+                - /scripts/script.sh
+              env:
+              - name: RESTIC_PASSWORD
+                value: password
+              volumeMounts:
+                - name: credentials
+                  mountPath: /root/.aws
+                - name: restic-script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: source
+                  mountPath: /mnt/source
+          volumes:
+            - name: credentials
+              emptyDir: {}
+            - name: restic-script
+              configMap:
+                name: restic-script
+            - name: source
+              persistentVolumeClaim:
+                claimName: data-palworld-server-0
+            - name: aws-iam-token
+              projected:
+                sources:
+                - serviceAccountToken:
+                    path: token
+                    expirationSeconds: 86400
+                    audience: sts.amazonaws.com
