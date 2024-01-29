@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: connector
-            image: ghcr.io/musaprg/annict-epgstation-connector:v0.3.2
+            image: ghcr.io/miscord-dev/annict-epgstation-connector:v0.4.0
             args:
             - sync
             envFrom:
