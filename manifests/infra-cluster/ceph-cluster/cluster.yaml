@@ -21,7 +21,7 @@ spec:
     # Mons should only be allowed on the same node for test environments where data loss is acceptable.
     allowMultiplePerNode: false
   cephVersion:
-    image: quay.io/ceph/ceph:v16.2.14
+    image: quay.io/ceph/ceph:v18.2.2
     allowUnsupported: false
   skipUpgradeChecks: false
   continueUpgradeAfterChecksEvenIfNotHealthy: false
