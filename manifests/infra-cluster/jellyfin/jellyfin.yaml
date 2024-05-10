@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jellyfin-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin-server
+  serviceName: jellyfin-server
+  template:
+    metadata:
+      labels:
+        app: jellyfin-server
+    spec:
+      containers:
+      - name: jellyfin
+        image: jellyfin/jellyfin:latest
+        ports:
+        - containerPort: 8096
+        volumeMounts:
+        - name: jellyfin-data
+          mountPath: /config
+        - name: epgstation-data
+          mountPath: /media
+      volumes:
+      - name: epgstation-data
+        persistentVolumeClaim:
+          claimName: recorded
+  volumeClaimTemplates:
+  - metadata:
+      name: jellyfin-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin-service
+spec:
+  selector:
+    app: jellyfin-server
+  ports:
+    - protocol: TCP
+      port: 8096
+      targetPort: 8096
+  type: LoadBalancer
