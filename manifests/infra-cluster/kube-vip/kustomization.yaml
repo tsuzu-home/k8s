@@ -3,7 +3,7 @@ kind: Kustomization
 
 helmCharts:
   - name: kube-vip
-    version: 0.4.4
+    version: 0.6.0
     repo: https://kube-vip.github.io/helm-charts/
     namespace: kube-system
     releaseName: kube-vip
