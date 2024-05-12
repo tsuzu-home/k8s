@@ -24,7 +24,7 @@ jobs:
           clusterctl generate provider --infrastructure k0sproject-k0smotron > ./manifests/infra-cluster/cluster-api/k0s/infrastructure/generated.yaml
           
           if [ -n "$(git status --porcelain)" ]; then
-            git config --global user.email "
+            git config --global user.email ""
             git config --global user.name "GitHub Actions"
             git add .
             git commit -m "Update generated manifests"
