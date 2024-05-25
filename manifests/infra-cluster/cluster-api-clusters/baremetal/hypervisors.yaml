@@ -1,0 +1,28 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: PooledRemoteMachine
+metadata:
+  name: paprika
+spec:
+  pool: default
+  machine:
+    address: 10.24.0.134
+    port: 22
+    user: root
+    sshKeyRef:
+      name: root-ssh
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: root-ssh
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword-store
+  target:
+    creationPolicy: Owner
+  data:
+  - secretKey: value
+    remoteRef:
+      key: root-ssh
+      property: id_ed25519
