@@ -11,4 +11,4 @@ images:
   - name: 1password/connect-sync
     newTag: 1.7.2
   - name: 1password/connect-api
-    newTag: 1.7.2
+    newTag: 1.7.3
