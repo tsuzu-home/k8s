@@ -9,7 +9,7 @@ metadata:
   name: palworld-server
   namespace: palworld
 spec:
-  replicas: 1
+  replicas: 0
   serviceName: palworld
   selector:
     matchLabels:
