@@ -5,6 +5,7 @@ metadata:
   namespace: palworld
 spec:
   schedule: "0,10,20,30,40,50 * * * *" # UTC
+  suspend: true
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
