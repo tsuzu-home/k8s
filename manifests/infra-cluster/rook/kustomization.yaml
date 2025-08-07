@@ -5,7 +5,7 @@ namespace: rook-ceph
 
 helmCharts:
   - name: rook-ceph
-    version: "v1.13.2"
+    version: "v1.17.7"
     repo: https://charts.rook.io/release
     namespace: rook-ceph
     valuesFile: values.yaml
