@@ -4,7 +4,7 @@ metadata:
   name: geysermc-server
   namespace: minecraft
 spec:
-  replicas: 1
+  replicas: 0
   serviceName: geysermc
   selector:
     matchLabels:

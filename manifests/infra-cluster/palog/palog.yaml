@@ -9,7 +9,7 @@ metadata:
   name: palog
   namespace: palog
 spec:
-  replicas: 1
+  replicas: 0
   serviceName: palog
   selector:
     matchLabels:
